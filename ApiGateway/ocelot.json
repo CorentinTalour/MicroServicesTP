@@ -1,0 +1,25 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "ServiceName": "UTILISATEUR-SERVICE",
+      "UpstreamPathTemplate": "/utilisateur/api/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "ServiceName": "HISTORIQUE-SERVICE",
+      "UpstreamPathTemplate": "/historique/api/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5000",
+    "ServiceDiscoveryProvider": {
+      "Host": "eureka-server",
+      "Port": 8761,
+      "Type": "Eureka"
+    },
+    "ServiceNameCaseInsensitive": true
+  }
+}

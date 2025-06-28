@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Historique", "Historique\Historique.csproj", "{44096587-648E-471F-8CFF-483E03F99A44}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{BCF6BF71-E46C-447D-9304-FF5B9857F636}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,5 +25,9 @@ Global
 		{44096587-648E-471F-8CFF-483E03F99A44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44096587-648E-471F-8CFF-483E03F99A44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44096587-648E-471F-8CFF-483E03F99A44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCF6BF71-E46C-447D-9304-FF5B9857F636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCF6BF71-E46C-447D-9304-FF5B9857F636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCF6BF71-E46C-447D-9304-FF5B9857F636}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCF6BF71-E46C-447D-9304-FF5B9857F636}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
