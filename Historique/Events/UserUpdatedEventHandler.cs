@@ -1,30 +1,29 @@
 using Historique.Data;
 using Historique.Models;
-using Microsoft.EntityFrameworkCore;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
 
 namespace Historique.Events;
 
-public class UserCreatedEventHandler
+public class UserUpdatedEventHandler
 {
     private readonly IServiceScopeFactory _scopeFactory;
 
-    public UserCreatedEventHandler(IServiceScopeFactory scopeFactory)
+    public UserUpdatedEventHandler(IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
-        Console.WriteLine("Handler UserCreatedEventHandler initialisé !");
+        Console.WriteLine("📢 Consumer UserUpdatedEventHandler initialisé !");
     }
 
-    [DeclareQueue(Name = "user.created.queue")]
+    [DeclareQueue(Name = "user.updated.queue")]
     [DeclareQueueBinding(
-        Name = "UserCreatedBinding",
-        QueueName = "user.created.queue",
+        Name = "UserUpdatedBinding",
+        QueueName = "user.updated.queue",
         ExchangeName = "ms.utilisateur",
-        RoutingKey = "user.created")]
-    [RabbitListener(Binding = "UserCreatedBinding")]
-    public void HandleUserCreated(UserCreatedEvent message)
+        RoutingKey = "user.updated")]
+    [RabbitListener(Binding = "UserUpdatedBinding")]
+    public void HandleUserUpdated(UserUpdatedEvent message)
     {
-        Console.WriteLine($"Event reçu - login : {message.Login}");
+        Console.WriteLine($"✅ Utilisateur modifié : {message.Login}");
 
         using (var scope = _scopeFactory.CreateScope())
         {
@@ -33,16 +32,16 @@ public class UserCreatedEventHandler
             var log = new Log
             {
                 Id = Guid.NewGuid(),
-                Message = $"Nouvel utilisateur créé : {message.Login}",
+                Message = $"Utilisateur modifié : {message.Login}",
                 Source = "historique-service",
                 IpPort = "historique:8081",
-                Code = "USER_CREATED"
+                Code = "USER_UPDATED"
             };
 
             dbContext.Logs.Add(log);
             dbContext.SaveChanges();
         }
 
-        Console.WriteLine($"Log inséré pour : {message.Login}");
+        Console.WriteLine($"✅ Log inséré pour modification : {message.Login}");
     }
 }

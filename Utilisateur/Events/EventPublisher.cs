@@ -1,19 +1,26 @@
-using Steeltoe.Messaging.RabbitMQ.Core;
-
 namespace Utilisateur.Events;
 
-public class EventPublisher
+public class EventPublisher : IEventPublisher
 {
-    private readonly RabbitTemplate _rabbitTemplate;
+    private readonly IRabbitMQProducer _rabbitMQProducer;
 
-    public EventPublisher(RabbitTemplate rabbitTemplate)
+    public EventPublisher(IRabbitMQProducer rabbitMQProducer)
     {
-        _rabbitTemplate = rabbitTemplate;
+        _rabbitMQProducer = rabbitMQProducer;
     }
 
-    public void PublishUserCreated(UserCreatedEvent logEvent)
+    public void PublishUserCreated(UserCreatedEvent userCreatedEvent)
     {
-        _rabbitTemplate.ConvertAndSend("ms.utilisateur", "user.created", logEvent);
-        Console.WriteLine($"Événement publié : {logEvent.Message}");
+        _rabbitMQProducer.SendMessage(userCreatedEvent, "user.created");
+    }
+
+    public void PublishUserUpdated(UserUpdatedEvent userUpdatedEvent)
+    {
+        _rabbitMQProducer.SendMessage(userUpdatedEvent, "user.updated");
+    }
+
+    public void PublishUserDeleted(UserDeletedEvent userDeletedEvent)
+    {
+        _rabbitMQProducer.SendMessage(userDeletedEvent, "user.deleted");
     }
 }

@@ -11,9 +11,9 @@ namespace Utilisateur.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly UtilisateurDbContext _context;
-    private readonly EventPublisher _eventPublisher;
+    private readonly IEventPublisher _eventPublisher;
 
-    public UsersController(UtilisateurDbContext context, EventPublisher eventPublisher)
+    public UsersController(UtilisateurDbContext context, IEventPublisher eventPublisher)
     {
         _context = context;
         _eventPublisher = eventPublisher;
@@ -76,6 +76,8 @@ public class UsersController : ControllerBase
 
         _eventPublisher.PublishUserCreated(new UserCreatedEvent
         {
+            Uuid = user.Uuid,
+            Login = user.Login,
             Message = $"Utilisateur créé : {user.Login}",
             Source = "utilisateur-service",
             IpPort = "utilisateur:8080",
@@ -91,8 +93,10 @@ public class UsersController : ControllerBase
     {
         if (id != user.Uuid)
         {
-            _eventPublisher.PublishUserCreated(new UserCreatedEvent
+            _eventPublisher.PublishUserUpdated(new UserUpdatedEvent()
             {
+                Uuid = user.Uuid,
+                Login = user.Login,
                 Message = $"Échec de modification - Id non correspondant : {id}",
                 Source = "utilisateur-service",
                 IpPort = "utilisateur:8080",
@@ -108,8 +112,10 @@ public class UsersController : ControllerBase
         {
             await _context.SaveChangesAsync();
 
-            _eventPublisher.PublishUserCreated(new UserCreatedEvent
+            _eventPublisher.PublishUserUpdated(new UserUpdatedEvent()
             {
+                Uuid = user.Uuid,
+                Login = user.Login,
                 Message = $"Utilisateur modifié : {user.Login}",
                 Source = "utilisateur-service",
                 IpPort = "utilisateur:8080",
@@ -120,8 +126,10 @@ public class UsersController : ControllerBase
         {
             if (!UserExists(id))
             {
-                _eventPublisher.PublishUserCreated(new UserCreatedEvent
+                _eventPublisher.PublishUserUpdated(new UserUpdatedEvent()
                 {
+                    Uuid = user.Uuid,
+                    Login = user.Login,
                     Message = $"Utilisateur à modifier non trouvé : {id}",
                     Source = "utilisateur-service",
                     IpPort = "utilisateur:8080",
@@ -144,8 +152,10 @@ public class UsersController : ControllerBase
         var user = await _context.Users.FindAsync(id);
         if (user == null)
         {
-            _eventPublisher.PublishUserCreated(new UserCreatedEvent
+            _eventPublisher.PublishUserDeleted(new UserDeletedEvent()
             {
+                Uuid = user.Uuid,
+                Login = user.Login,
                 Message = $"Utilisateur à supprimer non trouvé : {id}",
                 Source = "utilisateur-service",
                 IpPort = "utilisateur:8080",
@@ -158,8 +168,10 @@ public class UsersController : ControllerBase
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
 
-        _eventPublisher.PublishUserCreated(new UserCreatedEvent
+        _eventPublisher.PublishUserDeleted(new UserDeletedEvent()
         {
+            Uuid = user.Uuid,
+            Login = user.Login,
             Message = $"Utilisateur supprimé : {user.Login}",
             Source = "utilisateur-service",
             IpPort = "utilisateur:8080",

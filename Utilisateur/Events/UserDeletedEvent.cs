@@ -1,6 +1,6 @@
 namespace Utilisateur.Events;
 
-public class UserCreatedEvent
+public class UserDeletedEvent
 {
     public Guid Uuid { get; set; } 
     public string Login { get; set; }

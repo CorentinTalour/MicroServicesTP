@@ -29,7 +29,12 @@ builder.Services.AddRabbitExchange("ms.utilisateur", ExchangeType.TOPIC);
 
 // Register le handler et le listener
 builder.Services.AddSingleton<UserCreatedEventHandler>();
+builder.Services.AddSingleton<UserUpdatedEventHandler>();
+builder.Services.AddSingleton<UserDeletedEventHandler>();
+
 builder.Services.AddRabbitListeners<UserCreatedEventHandler>();
+builder.Services.AddRabbitListeners<UserUpdatedEventHandler>();
+builder.Services.AddRabbitListeners<UserDeletedEventHandler>();
 
 var app = builder.Build();
 

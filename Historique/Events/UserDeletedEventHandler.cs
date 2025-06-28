@@ -1,30 +1,29 @@
 using Historique.Data;
 using Historique.Models;
-using Microsoft.EntityFrameworkCore;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
 
 namespace Historique.Events;
 
-public class UserCreatedEventHandler
+public class UserDeletedEventHandler
 {
     private readonly IServiceScopeFactory _scopeFactory;
 
-    public UserCreatedEventHandler(IServiceScopeFactory scopeFactory)
+    public UserDeletedEventHandler(IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
-        Console.WriteLine("Handler UserCreatedEventHandler initialisé !");
+        Console.WriteLine("📢 Consumer UserDeletedEventHandler initialisé !");
     }
 
-    [DeclareQueue(Name = "user.created.queue")]
+    [DeclareQueue(Name = "user.deleted.queue")]
     [DeclareQueueBinding(
-        Name = "UserCreatedBinding",
-        QueueName = "user.created.queue",
+        Name = "UserDeletedBinding",
+        QueueName = "user.deleted.queue",
         ExchangeName = "ms.utilisateur",
-        RoutingKey = "user.created")]
-    [RabbitListener(Binding = "UserCreatedBinding")]
-    public void HandleUserCreated(UserCreatedEvent message)
+        RoutingKey = "user.deleted")]
+    [RabbitListener(Binding = "UserDeletedBinding")]
+    public void HandleUserDeleted(UserDeletedEvent message)
     {
-        Console.WriteLine($"Event reçu - login : {message.Login}");
+        Console.WriteLine($"✅ Utilisateur supprimé : {message.Login}");
 
         using (var scope = _scopeFactory.CreateScope())
         {
@@ -33,16 +32,16 @@ public class UserCreatedEventHandler
             var log = new Log
             {
                 Id = Guid.NewGuid(),
-                Message = $"Nouvel utilisateur créé : {message.Login}",
+                Message = $"Utilisateur supprimé : {message.Login}",
                 Source = "historique-service",
                 IpPort = "historique:8081",
-                Code = "USER_CREATED"
+                Code = "USER_DELETED"
             };
 
             dbContext.Logs.Add(log);
             dbContext.SaveChanges();
         }
 
-        Console.WriteLine($"Log inséré pour : {message.Login}");
+        Console.WriteLine($"✅ Log inséré pour suppression : {message.Login}");
     }
 }

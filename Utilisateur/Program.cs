@@ -29,6 +29,8 @@ builder.Services.AddRabbitExchange("ms.utilisateur", ExchangeType.TOPIC);
 
 // Event Publisher
 builder.Services.AddSingleton<EventPublisher>();
+builder.Services.AddSingleton<IRabbitMQProducer, RabbitMQProducer>();
+builder.Services.AddScoped<IEventPublisher, EventPublisher>();
 
 var app = builder.Build();
 
