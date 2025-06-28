@@ -1,0 +1,6 @@
+@Historique_HostAddress = http://localhost:5002
+
+GET {{Historique_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

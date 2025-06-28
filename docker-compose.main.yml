@@ -1,0 +1,9 @@
+﻿version: '3.8'
+
+services: {}
+# Pas besoin de services ici, tu vas juste inclure les autres compose
+
+networks:
+  default:
+    external: true
+    name: microservices-network

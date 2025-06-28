@@ -1,0 +1,35 @@
+services:
+  historique:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres-historique;Port=5432;Database=historiquedb;Username=postgres;Password=postgres
+      - spring__rabbitmq__host=rabbitmq
+      - spring__rabbitmq__port=5672
+      - spring__rabbitmq__username=myuser
+      - spring__rabbitmq__password=mypassword
+    depends_on:
+      - postgres-historique
+
+  postgres-historique:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=historiquedb
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata-historique:/var/lib/postgresql/data
+
+volumes:
+  pgdata-historique:
+    
+networks:
+  default:
+    external:
+      name: microservices-network
