@@ -18,4 +18,6 @@ public class Log
 
     [Required]
     public required string Code { get; set; }
+    
+    public DateTime Date { get; set; } 
 }

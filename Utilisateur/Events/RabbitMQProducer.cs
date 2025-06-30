@@ -26,6 +26,8 @@ public class RabbitMQProducer : IRabbitMQProducer
 
     public void SendMessage<T>(T message, string routingKey)
     {
+        Console.WriteLine($"[RabbitMQ] Envoi du message avec la clé {routingKey}");
+
         var json = JsonSerializer.Serialize(message);
         var body = Encoding.UTF8.GetBytes(json);
 

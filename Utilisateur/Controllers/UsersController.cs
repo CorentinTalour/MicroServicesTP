@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Utilisateur.Data;
+using Utilisateur.Dtos;
 using Utilisateur.Models;
 using Utilisateur.Events;
 
@@ -25,7 +26,7 @@ public class UsersController : ControllerBase
     {
         var users = await _context.Users.ToListAsync();
 
-        _eventPublisher.PublishUserCreated(new UserCreatedEvent
+        _eventPublisher.PublishUserAccessed(new UserAccessedEvent
         {
             Message = "Récupération de tous les utilisateurs",
             Source = "utilisateur-service",
@@ -44,7 +45,7 @@ public class UsersController : ControllerBase
 
         if (user == null)
         {
-            _eventPublisher.PublishUserCreated(new UserCreatedEvent
+            _eventPublisher.PublishUserAccessed(new UserAccessedEvent
             {
                 Message = $"Utilisateur non trouvé : {id}",
                 Source = "utilisateur-service",
@@ -55,7 +56,7 @@ public class UsersController : ControllerBase
             return NotFound();
         }
 
-        _eventPublisher.PublishUserCreated(new UserCreatedEvent
+        _eventPublisher.PublishUserAccessed(new UserAccessedEvent
         {
             Message = $"Utilisateur récupéré : {user.Login}",
             Source = "utilisateur-service",
@@ -89,24 +90,37 @@ public class UsersController : ControllerBase
 
     // PUT: api/users/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(Guid id, User user)
+    public async Task<IActionResult> UpdateUser(Guid id, UserUpdateDto userDto)
     {
-        if (id != user.Uuid)
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
         {
             _eventPublisher.PublishUserUpdated(new UserUpdatedEvent()
             {
-                Uuid = user.Uuid,
-                Login = user.Login,
-                Message = $"Échec de modification - Id non correspondant : {id}",
+                Uuid = id,
+                Login = userDto.Login,
+                Message = $"Utilisateur à modifier non trouvé : {id}",
                 Source = "utilisateur-service",
                 IpPort = "utilisateur:8080",
-                Code = "UPDATE_USER_BAD_REQUEST"
+                Code = "UPDATE_USER_NOT_FOUND"
             });
 
-            return BadRequest("Id mismatch.");
+            return NotFound();
         }
 
-        _context.Entry(user).State = EntityState.Modified;
+        // Mise à jour uniquement des champs autorisés (sans toucher l'UUID)
+        user.Login = userDto.Login;
+        user.Password = userDto.Password;
+        user.Token = userDto.Token;
+        user.OAuthId = userDto.OAuthId;
+        user.OAuthToken = userDto.OAuthToken;
+        user.TokenGenerationTime = userDto.TokenGenerationTime;
+        user.TokenLastUseTime = userDto.TokenLastUseTime;
+        user.DateNaissance = userDto.DateNaissance;
+        user.Email = userDto.Email;
+        user.Nom = userDto.Nom;
+        user.Prenom = userDto.Prenom;
+        user.Admin = userDto.Admin;
 
         try
         {
@@ -124,22 +138,7 @@ public class UsersController : ControllerBase
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!UserExists(id))
-            {
-                _eventPublisher.PublishUserUpdated(new UserUpdatedEvent()
-                {
-                    Uuid = user.Uuid,
-                    Login = user.Login,
-                    Message = $"Utilisateur à modifier non trouvé : {id}",
-                    Source = "utilisateur-service",
-                    IpPort = "utilisateur:8080",
-                    Code = "UPDATE_USER_NOT_FOUND"
-                });
-
-                return NotFound();
-            }
-            else
-                throw;
+            throw;
         }
 
         return NoContent();
@@ -154,8 +153,8 @@ public class UsersController : ControllerBase
         {
             _eventPublisher.PublishUserDeleted(new UserDeletedEvent()
             {
-                Uuid = user.Uuid,
-                Login = user.Login,
+                Uuid = Guid.NewGuid(), // Protection si user est null
+                Login = string.Empty,
                 Message = $"Utilisateur à supprimer non trouvé : {id}",
                 Source = "utilisateur-service",
                 IpPort = "utilisateur:8080",

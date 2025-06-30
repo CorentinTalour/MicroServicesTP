@@ -23,4 +23,9 @@ public class EventPublisher : IEventPublisher
     {
         _rabbitMQProducer.SendMessage(userDeletedEvent, "user.deleted");
     }
+    public void PublishUserAccessed(UserAccessedEvent userAccessedEvent)
+    {
+        Console.WriteLine($"[RabbitMQ] Publication de l'événement user.accessed : {userAccessedEvent.Message}");
+        _rabbitMQProducer.SendMessage(userAccessedEvent, "user.accessed");
+    }
 }

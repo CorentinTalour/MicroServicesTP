@@ -4,13 +4,19 @@
       "DownstreamPathTemplate": "/api/{everything}",
       "ServiceName": "UTILISATEUR-SERVICE",
       "UpstreamPathTemplate": "/utilisateur/api/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      }
     },
     {
       "DownstreamPathTemplate": "/api/{everything}",
       "ServiceName": "HISTORIQUE-SERVICE",
       "UpstreamPathTemplate": "/historique/api/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      }
     }
   ],
   "GlobalConfiguration": {
