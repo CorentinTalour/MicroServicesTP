@@ -26,18 +26,20 @@ builder.Services.AddRabbitServices(true);
 builder.Services.AddRabbitAdmin();
 builder.Services.AddRabbitTemplate();
 builder.Services.AddRabbitExchange("ms.utilisateur", ExchangeType.TOPIC);
+builder.Services.AddRabbitExchange("ms.film", ExchangeType.TOPIC);
 
 // Register le handler et le listener
 builder.Services.AddSingleton<UserAccessedEventHandler>();
 builder.Services.AddSingleton<UserCreatedEventHandler>();
 builder.Services.AddSingleton<UserUpdatedEventHandler>();
 builder.Services.AddSingleton<UserDeletedEventHandler>();
+builder.Services.AddSingleton<FilmEventHandler>();
 
 builder.Services.AddRabbitListeners<UserAccessedEventHandler>();
 builder.Services.AddRabbitListeners<UserCreatedEventHandler>();
 builder.Services.AddRabbitListeners<UserUpdatedEventHandler>();
 builder.Services.AddRabbitListeners<UserDeletedEventHandler>();
-
+builder.Services.AddRabbitListeners<FilmEventHandler>();
 
 var app = builder.Build();
 

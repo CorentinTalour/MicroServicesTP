@@ -1,0 +1,36 @@
+services:
+  film-db:
+    image: postgres:15
+    container_name: film-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: filmdb
+    ports:
+      - "5435:5432"
+    volumes:
+      - film-db-data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  film-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: film-service
+    ports:
+      - "8083:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=film-db;Port=5432;Database=filmdb;Username=postgres;Password=postgres
+    depends_on:
+      - film-db
+    networks:
+      - microservices-network
+
+volumes:
+  film-db-data:
+
+networks:
+  microservices-network:
+    external: true
