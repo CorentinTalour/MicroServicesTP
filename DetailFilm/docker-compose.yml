@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  film-detail-db:
+    image: postgres:15
+    container_name: film-detail-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: filmDetaildb
+    ports:
+      - "5436:5432"
+    volumes:
+      - film-detail-db-data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  film-detail-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: film-detail-service
+    ports:
+      - "8085:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=film-detail-db;Port=5432;Database=filmDetaildb;Username=postgres;Password=postgres
+    depends_on:
+      - film-detail-db
+    networks:
+      - microservices-network
+
+volumes:
+  film-detail-db-data:
+
+networks:
+  microservices-network:
+    external: true

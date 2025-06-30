@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Film", "Film\Film.csproj", "{790334EA-3FBE-4F3D-AFEA-8CE8BF93F1FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetailFilm", "DetailFilm\DetailFilm.csproj", "{82A5397D-EF20-49F9-BE09-0C9443F7AF0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,5 +37,9 @@ Global
 		{790334EA-3FBE-4F3D-AFEA-8CE8BF93F1FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{790334EA-3FBE-4F3D-AFEA-8CE8BF93F1FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{790334EA-3FBE-4F3D-AFEA-8CE8BF93F1FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82A5397D-EF20-49F9-BE09-0C9443F7AF0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82A5397D-EF20-49F9-BE09-0C9443F7AF0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82A5397D-EF20-49F9-BE09-0C9443F7AF0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82A5397D-EF20-49F9-BE09-0C9443F7AF0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
