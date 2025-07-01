@@ -1,3 +1,4 @@
+using Film.Clients;
 using Film.Data;
 using Film.Dtos;
 using Film.Events;
@@ -12,11 +13,13 @@ public class FilmsController : ControllerBase
 {
     private readonly FilmsDbContext _context;
     private readonly IEventPublisher _eventPublisher;
+    private readonly DetailFilmClient _detailFilmClient;
 
-    public FilmsController(FilmsDbContext context, IEventPublisher eventPublisher)
+    public FilmsController(FilmsDbContext context, IEventPublisher eventPublisher, DetailFilmClient detailFilmClient)
     {
         _context = context;
         _eventPublisher = eventPublisher;
+        _detailFilmClient = detailFilmClient;
     }
 
     // POST: api/films
@@ -172,8 +175,30 @@ public class FilmsController : ControllerBase
                 Message = $"Film (avec détails) non trouvé : {id}",
                 Code = "FILM_DETAILS_NOT_FOUND"
             });
-
             return NotFound();
+        }
+
+        var detailFilm = await _detailFilmClient.GetDetailFilmAsync(id);
+        if (detailFilm == null)
+        {
+            _eventPublisher.PublishFilmEvent(new FilmEvent
+            {
+                FilmId = id,
+                Message = $"Détail film non trouvé dans DetailFilm service : {id}",
+                Code = "DETAILFILM_NOT_FOUND"
+            });
+
+            return Ok(new FilmDetailDto
+            {
+                Id = film.Id,
+                Titre = film.Titre,
+                Description = film.Description,
+                Categorie = film.Categorie,
+                Prix = film.Prix,
+                DescriptionLongue = string.Empty,
+                Acteurs = new List<string>(),
+                Realisateurs = new List<string>()
+            });
         }
 
         _eventPublisher.PublishFilmEvent(new FilmEvent
@@ -183,19 +208,19 @@ public class FilmsController : ControllerBase
             Code = "GET_FILM_DETAILS"
         });
 
-        var filmDetail = new FilmDetailDto
+        var result = new FilmDetailDto
         {
             Id = film.Id,
             Titre = film.Titre,
             Description = film.Description,
             Categorie = film.Categorie,
             Prix = film.Prix,
-            DescriptionLongue = string.Empty,
-            Acteurs = new List<string>(),
-            Realisateurs = new List<string>()
+            DescriptionLongue = detailFilm.DescriptionLongue,
+            Acteurs = detailFilm.Acteurs,
+            Realisateurs = detailFilm.Realisateurs
         };
 
-        return filmDetail;
+        return Ok(result);
     }
 
     private bool FilmExists(Guid id)

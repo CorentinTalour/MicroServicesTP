@@ -1,8 +1,11 @@
+using Film.Clients;
 using Film.Data;
 using Film.Events;
 using Microsoft.EntityFrameworkCore;
 using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 
@@ -19,6 +22,14 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHttpClient<DetailFilmClient>((sp, client) =>
+{
+    var discoveryClient = sp.GetRequiredService<IDiscoveryClient>();
+    var instance = discoveryClient.GetInstances("detailfilm-service").FirstOrDefault();
+    if (instance == null) throw new Exception("DetailFilm service not found");
+    client.BaseAddress = instance.Uri;
+});
+
 // Connexion PostgreSQL
 builder.Services.AddDbContext<FilmsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -32,6 +43,9 @@ builder.Services.AddRabbitServices(true);
 builder.Services.AddRabbitAdmin();
 builder.Services.AddRabbitTemplate();
 builder.Services.AddRabbitExchange("ms.film", ExchangeType.TOPIC);
+
+builder.Services.AddHttpClient<DetailFilmClient>();
+builder.Services.AddDiscoveryClient(builder.Configuration);
 
 // Event Publisher
 builder.Services.AddScoped<EventPublisher>();
